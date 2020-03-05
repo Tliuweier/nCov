@@ -3,7 +3,7 @@ import { getPinyinByName } from '../data/zhen'
 import buildLineConfig from './config_line'
 import buildMapConfig from './config_map'
 import chinaMap from '../data/china.json'
-import area from './area.json'
+import area from '../data/area.json'
 
 export default function buildMapData (province) {
   const mapData = {
