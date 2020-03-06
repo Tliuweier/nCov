@@ -27,6 +27,15 @@ const cdn = {
 
 
 module.exports = {
+    devServer:{
+        proxy: {
+            '/g2': {    // search为转发路径
+                target: 'https://view.inews.qq.com/',  // 目标地址
+                ws: true, // 是否代理websockets
+                changeOrigin: true // 设置同源  默认false，是否需要改变原始主机头为目标URL,
+            }
+        }
+    },
     productionSourceMap: false,
     chainWebpack: config =>{
         // cdn start
@@ -35,6 +44,7 @@ module.exports = {
             return args
         })
         // cdn end
+        config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     },
     configureWebpack: config => {
         // 用cdn方式引入，则构建时要忽略相关资源

@@ -11,10 +11,14 @@
     "axios": "^0.19.2",
     "core-js": "^3.4.4",
     "echarts": "^4.6.0",
+    "element-ui": "^2.13.0",
     "pinyin": "^2.9.0",
     "resize-detector": "^0.2.0",
+    "sortablejs": "^1.10.2",
     "vue": "^2.6.10",
-    "vue-router": "^3.1.5"
+    "vue-router": "^3.1.5",
+    "vuedraggable": "^2.23.2",
+    "webpack-bundle-analyzer": "^3.6.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.0",
