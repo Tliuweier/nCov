@@ -1,25 +1,19 @@
 <template>
-  <!-- <div>
-    <div class="data-statement">
-      <div class="title">全国疫情状况</div>
-      <div class="update-time">{{updateTime}}</div>
-      <div class="data-explain">
-        <span>数据说明</span>
-      </div>
-    </div>
-    <e-summary :today="today" :total="total" />
-
-    <e-provinceCom />
-
-    <div class="section-title">国内病例</div>
-    <e-table :data="table" />
-  </div> -->
   <div>
+    <div class="head">
+      <p class="title">
+      </p>
+      <p class="jump"></p>
+      <p class="jump_zhuizong"></p>
+      <p class="qs">
+        <span @click="handleHeadTipsShow">数据来源：国家及各地卫健委每日信息发布</span>
+      </p>
+    </div>
     <div class="tabGlobal">
     <div class="topdatWrap">
       <div class="timeNum">
         <p class="d">
-          统计截至<span>{{lastUpdateTime}}</span><em>更新于<span>16分钟</span></em>
+          统计截至<span>{{lastUpdateTime}}</span><em>更新于<span>{{timer}}</span></em>
         </p>
       </div>
       <div class="recentNumber">
@@ -41,7 +35,8 @@
         <div class="icbar nowConfirm">
           <div class="add">较上日<span>{{chinaAdd.nowConfirm|numFilter}}</span></div>
           <div class="number">{{chinaTotal.nowConfirm}}</div>
-          <div class="text">现有确诊</div>
+          <div class="text" @click="handleShow">
+            <span>现有确诊</span></div>
         </div>
         <div class="icbar suspect">
           <div class="add">较上日<span>{{chinaAdd.suspect|numFilter}}</span></div>
@@ -72,23 +67,31 @@
   </div>
     <!-- <e-summary :today="today" :total="total" /> -->
 
-    <e-provinceCom />
+    <!--    <e-provinceCom />-->
 
-    <div class="section-title">国内病例</div>
-    <e-table :data="table" />
+<!--    <div class="section-title">国内病例</div>-->
+    <e-table :data="table" @returnOpen="returnOpen" />
+    <e-tips />
+    <e-dialog  :show="nowConfirmShow" @returnClose="returnClose"/>
+    <e-head-tips  :show="headTipShow" @returnClose="returnHeadTipsClose" />
   </div>
 </template>
 
 <script>
 import buildMapData from "../data/map";
 import ETable from "../components/Table.vue";
-import EProvinceCom from "../components/provinceCom.vue";
+import ETips from "../components/tips.vue"
+import EDialog from "../components/dialog.vue"
+import EHeadTips from "../components/headTips.vue"
 import { getNameByPinyin, getPinyinByName } from "../data/zhen";
 import request from "../utils/request";
+import pinyin from "pinyin"
 export default {
   components: {
     ETable,
-    EProvinceCom
+    ETips,
+    EDialog,
+    EHeadTips
   },
   data() {
     return {
@@ -104,7 +107,9 @@ export default {
       },
       lastUpdateTime:'',
       chinaAdd:{},
-      chinaTotal:{}
+      chinaTotal:{},
+      nowConfirmShow:false,
+      headTipShow:false
     };
   },
   filters:{
@@ -119,25 +124,90 @@ export default {
     }
   },
   methods: {
+    handleShow:function(){
+      let isShow = this.nowConfirmShow
+      this.nowConfirmShow = !isShow
+    },
+    handleHeadTipsShow:function(){
+      let isShow = this.headTipShow
+      this.headTipShow = !isShow
+    },
+    returnOpen:function(){
+      let isShow = this.headTipShow
+      this.headTipShow = !isShow
+    },
+    returnClose:function(){
+      this.nowConfirmShow = false;
+    },
+    returnHeadTipsClose:function(){
+      this.headTipShow = false;
+    },
     handleClick(params) {
       let provincePinyin = getPinyinByName(params.name);
       this.$router.push(`/${provincePinyin}`);
     },
     async getOnsInfo(){
        let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
-       window.console.log(data)
+
+       // let result = await request.axiosGet("/g2/getOnsInfo?name=disease_other")
+        // window.console.log(JSON.parse(result.data.data))
       if(data.ret==0){
         let d = JSON.parse(data.data)
+         // window.console.log(d)
         this.lastUpdateTime = d.lastUpdateTime
         this.chinaTotal = d.chinaTotal;
         this.chinaAdd = d.chinaAdd;
+        let provinces = d.areaTree[0].children
+        this.transformChinaData(provinces)
+        this.table = provinces
       }
+    },
+    transformChinaData:function (provinces) {
+      provinces.forEach(province => {
+
+        province.children.forEach(city => {
+          if (province.name === '北京' || province.name === '上海') {
+            city.cityName = city.name + '区'
+            province.pinyin = pinyin(province.name, { style: pinyin.STYLE_NORMAL }).join('')
+          } else {
+            if (province.name === '陕西') {
+              province.pinyin = 'shanxi1'
+            } else if (province.name === '重庆') {
+              province.pinyin = 'chongqing'
+            } else if (province.name === '西藏') {
+              province.pinyin = 'xizang'
+            } else {
+              province.pinyin = pinyin(province.name, { style: pinyin.STYLE_NORMAL }).join('')
+            }
+            city.cityName = city.name + '市'
+          }
+        })
+
+      })
     }
+  },
+  computed:{
+      timer:function(){
+        let string ='';
+        let lastUpdateTime =new Date(this.lastUpdateTime).getTime();
+        let nowTime =  new Date().getTime();
+        let time = (nowTime - lastUpdateTime) / 1000;
+        // return
+        let hours = parseInt(time % (60 * 60 * 24) / 3600);
+        // window.console.log(hours)
+        let minutes  = parseInt(time % (60 * 60 * 24) % 3600 / 60);
+        if(hours<=0){
+          string = minutes +'分钟'
+        }else {
+          string = hours+'小时'+minutes +'分钟'
+        }
+        return string;
+      }
   },
   created() {
     let province = this.$route.path.substr(1);
     this.provinceName = getNameByPinyin(province);
-    const { updateTime, total, map, table, chinaDayList, today } = buildMapData(
+    const { updateTime, total, map, chinaDayList, today } = buildMapData(
       this.provinceName
     );
 
@@ -146,12 +216,87 @@ export default {
     this.today = today;
     this.total = total;
     this.map = map;
-    this.table = table;
+    //this.table = table;
     this.getOnsInfo()
   }
 };
 </script>
 <style lang="stylus">
+  .head{
+    height:40vw;
+    position:relative;
+    background-size: cover;
+    &::before{
+      content :'.';
+      font-size :0;
+      line-height :0;
+      display:block;
+      position:absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      height: 48.533vw;
+      background: url('../assets/head_bg_new.png') top;
+      background-size: cover;
+    }
+    .title{
+      width :50.667vw;
+      height :16.553vw;
+      position:absolute;
+      left :50%;
+      transform: translate(-50%);
+      top:14.933vw;
+      background :url('../assets/head_title.png');
+      background-size: 100% 100%;
+    }
+    .jump,.jump_zhuizong{
+      height :6.933vw;
+      position:absolute;
+      top:4vw;
+    }
+    .jump{
+      width: 22.4vw;
+      background: url('../assets/head_more.png');
+      background-size: 100% 100%;
+      right: 0;
+    }
+    .jump_zhuizong{
+      width: 17.6vw;
+      background: url('../assets/head_zz2.png');
+      background-size: 100% 100%;
+      right: 24vw;
+    }
+    .qs{
+      line-height :3.733vw;
+      height :3.733vw;
+      color:#fff;
+      font-size :3.2vw;
+      position:absolute;
+      left: 5.333vw;
+      right: 5.333vw;
+      bottom: 4vw;
+      text-align: center;
+      span{
+        display:inline-block;
+        position :relative;
+        padding-right :4.533vw;
+        &::before{
+          content:'.';
+          font-size :0;
+          line-height :0;
+          position :absolute;
+          right: 0;
+          top:50%;
+          transform: translateY(-50%);
+          margin-top: -1px;
+          width: 3.2vw;
+          height: 3.2vw;
+          background: url('../assets/icon_qs2.png');
+          background-size: 100% 100%;
+        }
+      }
+    }
+  }
   .tabGlobal{
     .topdatWrap{
       .timeNum {
@@ -213,7 +358,7 @@ export default {
             line-height: 5.867vw;
             height: 5.867vw;
             font-weight: 600;
-            padding-top: 1.6vw;
+            padding-top: 1.8vw;
           }
           .text{
             font-size: 3.2vw;
@@ -221,7 +366,25 @@ export default {
             line-height: 3.2vw;
             color: #222;
             font-weight: 500;
-            margin-top: 1.6vw;
+            margin-top: 1.8vw;
+            span{
+              position relative;
+              &::before{
+                content: ".";
+                font-size: 0;
+                line-height: 0;
+                display: block;
+                position: absolute;
+                width: 3.2vw;
+                height: 3.2vw;
+                right: -3.733vw;
+                background: url('../assets/qs_now_conf.png');
+                background-size: 100% 100%;
+                top: 50%;
+                transform: translateY(-50%);
+                margin-top: -1px;
+              }
+            }
           }
         }
         .confirm{
@@ -364,8 +527,8 @@ export default {
       .qt_enter,.qt_enter>a{
         height: 11.2vw;
         border-radius: 1.6vw;
-      
- 
+
+
       }
     }
   }
