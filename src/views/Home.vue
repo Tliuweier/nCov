@@ -92,6 +92,7 @@
     <!--    <e-provinceCom />-->
 
     <!--    <div class="section-title">国内病例</div>-->
+    <e-china-map :cityStatis="cityStatis"/>
     <e-city-contrast :cityStatis="cityStatis"/>
     <e-table :data="table" @returnOpen="returnOpen" />
     <e-tips />
@@ -101,13 +102,12 @@
 </template>
 
 <script>
-import buildMapData from "../data/map";
+import EChinaMap from "../components/chinaMap.vue";
 import ETable from "../components/Table.vue";
 import ETips from "../components/tips.vue";
 import ECityContrast from "../components/cityContrast.vue";
 import EDialog from "../components/dialog.vue";
 import EHeadTips from "../components/headTips.vue";
-import { getNameByPinyin, getPinyinByName } from "../data/zhen";
 import request from "../utils/request";
 import pinyin from "pinyin";
 export default {
@@ -116,7 +116,8 @@ export default {
     ETips,
     EDialog,
     EHeadTips,
-    ECityContrast
+    ECityContrast,
+    EChinaMap
   },
   data() {
     return {
@@ -168,10 +169,7 @@ export default {
     returnHeadTipsClose: function() {
       this.headTipShow = false;
     },
-    handleClick(params) {
-      let provincePinyin = getPinyinByName(params.name);
-      this.$router.push(`/${provincePinyin}`);
-    },
+    
     async getOnsInfo() {
       let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
 
@@ -235,17 +233,6 @@ export default {
     }
   },
   created() {
-    let province = this.$route.path.substr(1);
-    this.provinceName = getNameByPinyin(province);
-    const { updateTime, total, map, chinaDayList, today } = buildMapData(
-      this.provinceName
-    );
-
-    this.updateTime = updateTime;
-    this.chinaDayList = chinaDayList;
-    this.today = today;
-    this.total = total;
-    this.map = map;
     //this.table = table;
     this.getOnsInfo();
   }

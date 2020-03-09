@@ -13,15 +13,21 @@ const cdn = {
     externals: {
         vue: 'Vue',
         vuex: 'Vuex',
-        'vue-router': 'VueRouter'
+        'vue-router': 'VueRouter',
+        'echarts':'echarts',
+        'v-charts':'vCharts'
     },
     // cdn的css链接
-    css: [],
+    css: [
+        'https://cdn.jsdelivr.net/npm/v-charts/lib/style.min.css'
+    ],
     // cdn的js链接
     js: [
         'https://cdn.staticfile.org/vue/2.6.10/vue.min.js',
         'https://cdn.staticfile.org/vuex/3.0.1/vuex.min.js',
-        'https://cdn.staticfile.org/vue-router/3.0.3/vue-router.min.js'
+        'https://cdn.staticfile.org/vue-router/3.0.3/vue-router.min.js',
+        'https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js',
+        'https://cdn.jsdelivr.net/npm/v-charts/lib/index.min.js',
     ]
 }
 
