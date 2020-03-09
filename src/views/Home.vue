@@ -92,7 +92,7 @@
     <!--    <e-provinceCom />-->
 
     <!--    <div class="section-title">国内病例</div>-->
-    <e-china-map :cityStatis="cityStatis"/>
+    <e-china-map :wuhanDayListConfirmAdd="wuhanDayListConfirmAdd" :notWuhanDayListConfirmAdd="notWuhanDayListConfirmAdd" :notHubeiDayListConfirmAdd="notHubeiDayListConfirmAdd"/>
     <e-city-contrast :cityStatis="cityStatis"/>
     <e-table :data="table" @returnOpen="returnOpen" />
     <e-tips />
@@ -136,7 +136,11 @@ export default {
       chinaTotal: {},
       nowConfirmShow: false,
       headTipShow: false,
-      cityStatis:{}
+      cityStatis:{},
+      notHubeiDayListConfirmAdd:{},
+      notWuhanDayListConfirmAdd:{},
+      wuhanDayListConfirmAdd:{}
+
     };
   },
   filters: {
@@ -169,7 +173,7 @@ export default {
     returnHeadTipsClose: function() {
       this.headTipShow = false;
     },
-    
+
     async getOnsInfo() {
       let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
 
@@ -186,6 +190,38 @@ export default {
         let provinces = d.areaTree[0].children;
         this.transformChinaData(provinces);
         this.table = provinces;
+        let wuhanDayList = s.wuhanDayList;
+        let wuhanDayListConfirmAdd = [];
+        let notWuhanDayListConfirmAdd = []
+        let notHubeiDayListConfirmAdd = []
+        for(let i=0;i<wuhanDayList.length;i++){
+          let date = wuhanDayList[i].date
+          let wuhanConfirmAdd = wuhanDayList[i].wuhan.confirmAdd
+          let notWuhanConfirmAdd = wuhanDayList[i].notWuhan.confirmAdd
+          let notHubeiConfirmAdd = wuhanDayList[i].notHubei.confirmAdd
+          let item = {};let item1 = {} ;let item2 = {};
+          item.date = date;
+          item.wuhanConfirmAdd  = wuhanConfirmAdd
+          item1.date = date;
+          item1.notWuhanConfirmAdd = notWuhanConfirmAdd
+          item2.date = date
+          item2.notHubeiConfirmAdd = notHubeiConfirmAdd
+          wuhanDayListConfirmAdd.push(item)
+          notWuhanDayListConfirmAdd.push(item1)
+          notHubeiDayListConfirmAdd.push(item2)
+        }
+        this.wuhanDayListConfirmAdd ={
+          columns:['date','wuhanConfirmAdd'],
+          rows:wuhanDayListConfirmAdd
+        }
+        this.notWuhanDayListConfirmAdd={
+          columns:['date','notWuhanConfirmAdd'],
+          rows:notWuhanDayListConfirmAdd
+        }
+        this.notHubeiDayListConfirmAdd={
+          columns:['date','notHubeiConfirmAdd'],
+          rows:notHubeiDayListConfirmAdd
+        }
       }
     },
     transformChinaData: function(provinces) {
