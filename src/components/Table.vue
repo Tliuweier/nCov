@@ -60,7 +60,7 @@ export default {
         }
     },
     created(){
-        window.console.log(this.data)
+        // window.console.log(this.data)
     },
     methods:{
         expandLine:function(pinyin,index){
