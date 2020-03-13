@@ -103,6 +103,8 @@
     <!--    <e-provinceCom />-->
 
     <!--    <div class="section-title">国内病例</div>-->
+    <e-wuhan-line/>
+    <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-city-contrast :cityStatis="cityStatis" />
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-hubei-line :hubeiLineData="hubeiLineData" :hubeiLine2Data="hubeiLine2Data" :hubeiLine3Data="hubeiLine3Data" :hubeiLine4Data="hubeiLine4Data"/>
@@ -141,7 +143,8 @@ export default {
     ECityContrast,
     EChinaMap,
     EChinaLine,
-    EHubeiLine
+    EHubeiLine,
+    EWuhanLine
   },
   data() {
     return {
@@ -589,7 +592,7 @@ export default {
     .marquee-warp,.marquee
       border-radius 3.2vw
       position relative
-    .show 
+    .show
       display block
     .marquee-warp
       background-color #fff
@@ -622,7 +625,7 @@ export default {
             margin 0
             padding 0
             list-style none
-          .li 
+          .li
             height 4.667vw
             width 76vw
             line-height 4.667vw
@@ -825,7 +828,7 @@ export default {
         line-height: 0;
         position absolute;
         right 0;
-        top 50%;      
+        top 50%;
         transform translateY(-50%);
         width 3.2vw;
         height 3.2vw;

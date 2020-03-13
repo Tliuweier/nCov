@@ -79,13 +79,13 @@
                 },
                 color:['#F06061'],
                 tooltip:{
-                    
+
                     textStyle:{
                         color:'#fff',
                         fontSize:'8'
                     }
                 }
-                
+
             }
             return{
                 swiperOption: {
@@ -134,11 +134,11 @@
             }
         },
         created(){
-          window.console.log(this.wuhanDayListConfirmAdd)
+         // window.console.log(this.wuhanDayListConfirmAdd)
         },
         mounted(){
-            window.console.log('this is current swiper instance object', this.swiper)
-            this.swiper.slideTo(0, 1000, false)
+            // window.console.log('this is current swiper instance object', this.swiper)
+            this.swiper.slideTo(1, 1000, false)
         }
     }
 </script>
@@ -165,7 +165,7 @@
                     height 50vw;
                 }
             }
-            
+
         }
         .imgBox{
                 width: 9.6vw;
@@ -175,7 +175,7 @@
                 z-index: 999;
         }
         .swiper-button-prev{
-                    
+
             background: url('../assets/zhexian_left.png');
             background-size: 100% 100%;
             left: -0.2vw;
@@ -193,7 +193,7 @@
             justify-content space-between;
             margin 3.2vw 0 0 5.333vw;
             width 89.333vw;
-           
+
             .pagination-customs1{
                 display block;
                 width 28.533vw;
@@ -213,6 +213,6 @@
                 font-weight: 500;
             }
         }
-    
+
     }
 </style>
