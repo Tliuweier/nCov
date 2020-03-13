@@ -92,7 +92,7 @@
     <!--    <e-provinceCom />-->
 
     <!--    <div class="section-title">国内病例</div>-->
-
+    <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-city-contrast :cityStatis="cityStatis" />
     <e-china-map
       :wuhanDayListConfirmAdd="wuhanDayListConfirmAdd"
@@ -111,6 +111,7 @@
 
 <script>
 import EChinaMap from "../components/chinaMap.vue";
+import EChinaLine from "../components/chinaLine.vue";
 import ETable from "../components/Table.vue";
 import ETips from "../components/tips.vue";
 import ECityContrast from "../components/cityContrast.vue";
@@ -125,7 +126,8 @@ export default {
     EDialog,
     EHeadTips,
     ECityContrast,
-    EChinaMap
+    EChinaMap,
+    EChinaLine
   },
   data() {
     return {
@@ -185,7 +187,7 @@ export default {
       let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
 
       let result = await request.axiosGet("/g2/getOnsInfo?name=disease_other");
-      // window.console.log(JSON.parse(result.data.data));
+      window.console.log(JSON.parse(result.data.data));
       if (data.ret == 0) {
         let d = JSON.parse(data.data);
         //  window.console.log(d)
@@ -197,7 +199,17 @@ export default {
         let provinces = d.areaTree[0].children;
         this.transformChinaData(provinces);
         this.table = provinces;
-        let wuhanDayList = s.wuhanDayList;
+        //武汉line
+        this.getWuhanLineData(s)
+        //全国line
+        this.getChinaLine1Data(s)
+        this.getChinaLine2Data(s)
+        this.getChinaLine3Data(s)
+        this.getChinaLine4Data(s)
+      }
+    },
+    getWuhanLineData:function(s){
+      let wuhanDayList = s.wuhanDayList;
         let wuhanDayListConfirmAdd = [];
         let notWuhanDayListConfirmAdd = [];
         let notHubeiDayListConfirmAdd = [];
@@ -231,7 +243,94 @@ export default {
           columns: ["date", "notHubeiConfirmAdd"],
           rows: notHubeiDayListConfirmAdd
         };
-      }
+    },
+    getChinaLine1Data:function(s){
+        let chinaDayAddList = s.chinaDayAddList
+        let chinaLine1Data = []
+        // let chinaLin2Data = []
+        // let chinaLine3Data = []
+        // let chinaLine4Data = []
+        for (let i = 0; i < chinaDayAddList.length; i++) {
+          let item1 = {};
+          let date = chinaDayAddList[i].date;
+          let addConfirm = chinaDayAddList[i].confirm;
+          let addSuspect =  chinaDayAddList[i].suspect;
+          item1.date = date
+          item1.addConfirm = addConfirm
+          item1.addSuspect =addSuspect
+          chinaLine1Data.push(item1)
+        }
+        this.chinaLine1Data = {
+          columns: ["date", "addConfirm","addSuspect"],
+          rows: chinaLine1Data
+        }
+    },
+    getChinaLine2Data:function(s){
+      let chinaDayList = s.chinaDayList.slice(7,s.chinaDayList.length-1)
+        let chinaLine2Data = []
+        // let chinaLin2Data = []
+        // let chinaLine3Data = []
+        // let chinaLine4Data = []
+        for (let i = 0; i < chinaDayList.length; i++) {
+          let item2 = {};
+          let date = chinaDayList[i].date;
+          let confirm = chinaDayList[i].confirm;
+          let nowSevere = chinaDayList[i].nowSevere;
+          let nowConfirm = chinaDayList[i].nowConfirm;
+          let suspect =  chinaDayList[i].suspect;
+          item2.date = date
+          item2.confirm = confirm
+          item2.nowConfirm = nowConfirm
+          item2.nowSevere = nowSevere
+          item2.suspect =suspect
+          chinaLine2Data.push(item2)
+        }
+        this.chinaLine2Data = {
+          columns: ["date", "confirm","nowSevere","nowConfirm","suspect"],
+          rows: chinaLine2Data
+        }
+    },
+    getChinaLine3Data:function(s){
+        let chinaDayList = s.chinaDayList.slice(7,s.chinaDayList.length-1)
+        let chinaLine3Data = []
+        // let chinaLin2Data = []
+        // let chinaLine3Data = []
+        // let chinaLine4Data = []
+        for (let i = 0; i < chinaDayList.length; i++) {
+          let item3 = {};
+          let date = chinaDayList[i].date;
+          let heal = chinaDayList[i].heal;
+          let dead =  chinaDayList[i].dead;
+          item3.date = date
+          item3.heal = heal
+          item3.dead =dead
+          chinaLine3Data.push(item3)
+        }
+        this.chinaLine3Data = {
+          columns: ["date", "heal","dead"],
+          rows: chinaLine3Data
+        }
+    },
+    getChinaLine4Data:function(s){
+      let chinaDayList = s.chinaDayList.slice(7,s.chinaDayList.length-1)
+        let chinaLine4Data = []
+        // let chinaLin2Data = []
+        // let chinaLine3Data = []
+        // let chinaLine4Data = []
+        for (let i = 0; i < chinaDayList.length; i++) {
+          let item4 = {};
+          let date = chinaDayList[i].date;
+          let healRate = chinaDayList[i].healRate;
+          let deadRate =  chinaDayList[i].deadRate;
+          item4.date = date
+          item4.healRate = healRate
+          item4.deadRate =deadRate
+          chinaLine4Data.push(item4)
+        }
+        this.chinaLine4Data = {
+          columns: ["date", "healRate","deadRate"],
+          rows: chinaLine4Data
+        }
     },
     transformChinaData: function(provinces) {
       provinces.forEach(province => {
