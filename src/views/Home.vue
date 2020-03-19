@@ -33,7 +33,7 @@
         </div>
         <div class="recentNumber">
           <div class="icbar confirm">
-            <div class="add">
+            <div class="add" v-if="isShowAdd">
               较上日
               <span>{{chinaAdd.confirm|numFilter}}</span>
             </div>
@@ -41,7 +41,7 @@
             <div class="text">累计确诊</div>
           </div>
           <div class="icbar heal">
-            <div class="add">
+            <div class="add" v-if="isShowAdd">
               较上日
               <span>{{chinaAdd.heal|numFilter}}</span>
             </div>
@@ -49,7 +49,7 @@
             <div class="text">累计治愈</div>
           </div>
           <div class="icbar dead">
-            <div class="add">
+            <div class="add" v-if="isShowAdd">
               较上日
               <span>{{chinaAdd.dead|numFilter}}</span>
             </div>
@@ -57,7 +57,7 @@
             <div class="text">累计死亡</div>
           </div>
           <div class="icbar nowConfirm">
-            <div class="add">
+            <div class="add" v-if="isShowAdd">
               较上日
               <span>{{chinaAdd.nowConfirm|numFilter}}</span>
             </div>
@@ -67,7 +67,7 @@
             </div>
           </div>
           <div class="icbar suspect">
-            <div class="add">
+            <div class="add" v-if="isShowAdd">
               较上日
               <span>{{chinaAdd.suspect|numFilter}}</span>
             </div>
@@ -75,7 +75,7 @@
             <div class="text">现有疑似</div>
           </div>
           <div class="icbar nowSevere">
-            <div class="add">
+            <div class="add" v-if="isShowAdd">
               较上日
               <span>{{chinaAdd.nowSevere|numFilter}}</span>
             </div>
@@ -103,7 +103,7 @@
     <!--    <e-provinceCom />-->
 
     <!--    <div class="section-title">国内病例</div>-->
-    <e-wuhan-line/>
+    <e-wuhan-line :chinaMapData="chinaMapData"/>
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-city-contrast :cityStatis="cityStatis" />
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
@@ -125,8 +125,9 @@
 
 <script>
 import EChinaMap from "../components/chinaMap.vue";
-import EChinaLine from "../components/chinaLine.vue";
 import EHubeiLine from "../components/hubeiLine.vue";
+import EChinaLine from "../components/chinaLine.vue";
+import EWuhanLine from "../components/wuhanLine.vue";
 import ETable from "../components/Table.vue";
 import ETips from "../components/tips.vue";
 import ECityContrast from "../components/cityContrast.vue";
@@ -205,17 +206,19 @@ export default {
       let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
 
       let result = await request.axiosGet("/g2/getOnsInfo?name=disease_other");
-      window.console.log(JSON.parse(result.data.data));
+      // window.console.log(JSON.parse(result.data.data));
       let marqueeResult = await request.axiosGet("/g2/getOnsInfo?name=wuwei_ww_ww_today_notice")
-      //  window.console.log(JSON.parse(marqueeResult.data.data));
+      window.console.log(JSON.parse(data.data));
       if (data.ret == 0) {
         let d = JSON.parse(data.data);
+        this.isShowAdd = d.isShowAdd;
         this.lastUpdateTime = d.lastUpdateTime;
         this.chinaTotal = d.chinaTotal;
         this.chinaAdd = d.chinaAdd;
         let provinces = d.areaTree[0].children;
         this.transformChinaData(provinces);
         this.table = provinces;
+        this.getChinaMapData(provinces)
       }
       if(result.data.ret == 0){
         let s = JSON.parse(result.data.data);
@@ -237,6 +240,19 @@ export default {
         let marqueeInfo = JSON.parse(marqueeResult.data.data)
         this.marqueeInfo = marqueeInfo[0]
       }
+    },
+    getChinaMapData:function(provinces){
+      let chinaMapData = []
+      for (let i = 0; i < provinces.length; i++) {
+        let item = {}
+        item.name = provinces[i].name;
+        item.nowConfirm = provinces[i].total.confirm-provinces[i].total.heal-provinces[i].total.dead
+        chinaMapData.push(item)
+      }
+      this.chinaMapData = {
+          columns: ["name", "nowConfirm"],
+          rows: chinaMapData
+      };
     },
     getWuhanLineData:function(s){
       let wuhanDayList = s.wuhanDayList;

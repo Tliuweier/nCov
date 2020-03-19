@@ -371,15 +371,17 @@ export default {
            
             .pagination-customs5{
                 display block;
-                width 28.533vw;
+                flex 1;
+                // width 28.533vw;
                 border: 1px solid #e9ebed;
                 border-radius: 1.067vw;
-                font-size: 3.2vw;
+                font-size: 2.8vw;
                 line-height: 4.267vw;
                 text-align: center;
                 height: 9.867vw;
                 padding-top: 1.333vw;
                 background-color: #f3f6f8;
+                margin-right 1vw;
             }
             .active{
                 background-color: #eef4ff;
