@@ -138,7 +138,7 @@
         },
         mounted(){
             window.console.log('this is current swiper instance object', this.swiper)
-            this.swiper.slideTo(1, 1000, false)
+            this.swiper.slideTo(0, 1000, false)
         }
     }
 </script>

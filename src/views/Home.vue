@@ -10,6 +10,17 @@
     </div>
     <div class="tabGlobal">
       <div class="topdatWrap">
+        <div  class="marquee-warp"  :class="{show:marqueeInfo.isNotice}">
+          <div class="marquee">
+            <div class="marquee-tab">
+              <ul class="set-box">
+                <li class="li out">
+                  <a>{{marqueeInfo.showNotice}}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
         <div class="timeNum">
           <p class="d">
             统计截至
@@ -92,8 +103,9 @@
     <!--    <e-provinceCom />-->
 
     <!--    <div class="section-title">国内病例</div>-->
-    <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-city-contrast :cityStatis="cityStatis" />
+    <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
+    <e-hubei-line :hubeiLineData="hubeiLineData" :hubeiLine2Data="hubeiLine2Data" :hubeiLine3Data="hubeiLine3Data" :hubeiLine4Data="hubeiLine4Data"/>
     <e-china-map
       :wuhanDayListConfirmAdd="wuhanDayListConfirmAdd"
       :notWuhanDayListConfirmAdd="notWuhanDayListConfirmAdd"
@@ -112,6 +124,7 @@
 <script>
 import EChinaMap from "../components/chinaMap.vue";
 import EChinaLine from "../components/chinaLine.vue";
+import EHubeiLine from "../components/hubeiLine.vue";
 import ETable from "../components/Table.vue";
 import ETips from "../components/tips.vue";
 import ECityContrast from "../components/cityContrast.vue";
@@ -127,7 +140,8 @@ export default {
     EHeadTips,
     ECityContrast,
     EChinaMap,
-    EChinaLine
+    EChinaLine,
+    EHubeiLine
   },
   data() {
     return {
@@ -149,7 +163,8 @@ export default {
       cityStatis: {},
       notHubeiDayListConfirmAdd: {},
       notWuhanDayListConfirmAdd: {},
-      wuhanDayListConfirmAdd: {}
+      wuhanDayListConfirmAdd: {},
+      marqueeInfo:{}
     };
   },
   filters: {
@@ -188,24 +203,36 @@ export default {
 
       let result = await request.axiosGet("/g2/getOnsInfo?name=disease_other");
       window.console.log(JSON.parse(result.data.data));
+      let marqueeResult = await request.axiosGet("/g2/getOnsInfo?name=wuwei_ww_ww_today_notice")
+      //  window.console.log(JSON.parse(marqueeResult.data.data));
       if (data.ret == 0) {
         let d = JSON.parse(data.data);
-        //  window.console.log(d)
-        let s = JSON.parse(result.data.data);
-        this.cityStatis = s.cityStatis;
         this.lastUpdateTime = d.lastUpdateTime;
         this.chinaTotal = d.chinaTotal;
         this.chinaAdd = d.chinaAdd;
         let provinces = d.areaTree[0].children;
         this.transformChinaData(provinces);
         this.table = provinces;
-        //武汉line
+      }
+      if(result.data.ret == 0){
+        let s = JSON.parse(result.data.data);
+        this.cityStatis = s.cityStatis;
+         //武汉line
         this.getWuhanLineData(s)
         //全国line
         this.getChinaLine1Data(s)
         this.getChinaLine2Data(s)
         this.getChinaLine3Data(s)
         this.getChinaLine4Data(s)
+        //湖北line
+        this.getHubeiLine1Data(s)
+        this.getHubeiLine2Data(s)
+        this.getHubeiLine3Data(s)
+        this.getHubeiLine4Data(s)
+      }
+      if(marqueeResult.data.ret ==0){
+        let marqueeInfo = JSON.parse(marqueeResult.data.data)
+        this.marqueeInfo = marqueeInfo[0]
       }
     },
     getWuhanLineData:function(s){
@@ -356,6 +383,114 @@ export default {
           }
         });
       });
+    },
+    getHubeiLine1Data:function(s){
+      let dailyHistory = s.dailyHistory
+      let hubeiLine1Data = []
+      for(let i = 0; i < dailyHistory.length; i++){
+        let item = {}
+        let date = dailyHistory[i].date;
+        let nowConfirm = dailyHistory[i].hubei.nowConfirm
+        let heal = dailyHistory[i].hubei.heal;
+        let dead =  dailyHistory[i].hubei.dead;
+        item.nowConfirm = nowConfirm
+        item.heal = heal
+        item.dead = dead
+        item.date = date
+        hubeiLine1Data.push(item)
+      }
+      this.hubeiLineData = {
+          columns: ['date','nowConfirm','heal','dead'],
+          rows: hubeiLine1Data
+      }
+      // this.hubeiLine2Data = {
+      //     columns: [],
+      //     rows: []
+      // }
+      // this.hubeiLine3Data = {
+      //     columns: [],
+      //     rows: []
+      // }
+      // this.hubeiLine4Data = {
+      //     columns: [],
+      //     rows: []
+      // }
+    },
+    getHubeiLine2Data:function(s){
+      let dailyHistory = s.dailyHistory
+      let hubeiLine2Data = []
+      for(let i = 0; i < dailyHistory.length; i++){
+        let item = {}
+        let date = dailyHistory[i].date;
+        let nowConfirm = dailyHistory[i].notHubei.nowConfirm
+        let heal = dailyHistory[i].notHubei.heal;
+        let dead =  dailyHistory[i].notHubei.dead;
+        item.nowConfirm = nowConfirm
+        item.heal = heal
+        item.dead = dead
+        item.date = date
+        hubeiLine2Data.push(item)
+      }
+      this.hubeiLine2Data = {
+          columns: ['date','nowConfirm','heal','dead'],
+          rows: hubeiLine2Data
+      }
+      // this.hubeiLine3Data = {
+      //     columns: [],
+      //     rows: []
+      // }
+      // this.hubeiLine4Data = {
+      //     columns: [],
+      //     rows: []
+      // }
+    },
+    getHubeiLine3Data:function(s){
+      let dailyHistory = s.dailyHistory
+      let hubeiLine3Data = []
+      for(let i = 0; i < dailyHistory.length; i++){
+        let item = {}
+        let date = dailyHistory[i].date;
+        let hubeiHealRate = dailyHistory[i].hubei.healRate
+        let notHubeiHealRate = dailyHistory[i].notHubei.healRate;
+        let countryHealRate =  dailyHistory[i].country.healRate;
+        item.hubeiHealRate = hubeiHealRate
+        item.notHubeiHealRate = notHubeiHealRate
+        item.countryHealRate = countryHealRate
+        item.date = date
+        hubeiLine3Data.push(item)
+      }
+      this.hubeiLine3Data = {
+          columns: ['date','countryHealRate','hubeiHealRate','notHubeiHealRate'],
+          rows: hubeiLine3Data
+      }
+      // this.hubeiLine4Data = {
+      //     columns: [],
+      //     rows: []
+      // }
+    },
+    getHubeiLine4Data:function(s){
+      let dailyHistory = s.dailyHistory
+      let hubeiLine4Data = []
+      for(let i = 0; i < dailyHistory.length; i++){
+        let item = {}
+        let date = dailyHistory[i].date;
+        let hubeiDeadRate = dailyHistory[i].hubei.deadRate
+        let notHubeiDeadRate = dailyHistory[i].notHubei.deadRate;
+        let countryDeadRate =  dailyHistory[i].country.deadRate;
+        item.hubeiDeadRate = hubeiDeadRate
+        item.notHubeiDeadRate = notHubeiDeadRate
+        item.countryDeadRate = countryDeadRate
+        item.date = date
+        hubeiLine4Data.push(item)
+      }
+      this.hubeiLine4Data = {
+          columns: ['date','countryDeadRate','hubeiDeadRate','notHubeiDeadRate'],
+          rows: hubeiLine4Data
+      }
+      // this.hubeiLine4Data = {
+      //     columns: [],
+      //     rows: []
+      // }
     }
   },
   computed: {
@@ -451,6 +586,53 @@ export default {
         background-size 100% 100%
 .tabGlobal
   .topdatWrap
+    .marquee-warp,.marquee
+      border-radius 3.2vw
+      position relative
+    .show 
+      display block
+    .marquee-warp
+      background-color #fff
+      padding-top 1px
+      .marquee
+        width 90.133vw
+        height 10.133vw;
+        margin 4vw auto 0
+        padding 0 5.333vw
+        box-sizing border-box
+        background url('../assets/marquee-bg-none.png') #f8f8f8 50% no-repeat
+        background-size 90.133vw 10.133vw
+        font-size 4vw
+        border-radius 1.6vw
+        .marquee-tab
+          position absolute
+          color #737373
+          left 9.733vw
+          top 50%
+          transform translateY(-50%)
+          width: 76vw;
+          font-size 3.2vw
+          overflow hidden
+          font-weight 400
+          height 4.667vw
+          .set-box
+            position absolute
+            overflow hidden
+          ul
+            margin 0
+            padding 0
+            list-style none
+          .li 
+            height 4.667vw
+            width 76vw
+            line-height 4.667vw
+            overflow hidden
+            .out
+              background none
+            a
+              color #222
+              text-decoration none
+              display block
     .timeNum
       padding 4vw 5.333vw
       background-color #fff
