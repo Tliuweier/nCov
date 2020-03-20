@@ -103,7 +103,14 @@
     <!--    <e-provinceCom />-->
 
     <!--    <div class="section-title">国内病例</div>-->
-    <e-wuhan-line :chinaMapData="chinaMapData"/>
+    <div class="chmap">
+      <e-wuhan-line :chinaMapData="chinaMapData" :selected="selected"/>
+      <div class="chinamapbtn">
+        <span :class="[selected==1?'current':'']" @click="handleSelected(1)">现有确诊</span>
+        <span :class="[selected==2?'current':'']" @click="handleSelected(2)">累计确诊</span>
+      </div>
+    </div>
+    
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-city-contrast :cityStatis="cityStatis" />
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
@@ -168,7 +175,8 @@ export default {
       notHubeiDayListConfirmAdd: {},
       notWuhanDayListConfirmAdd: {},
       wuhanDayListConfirmAdd: {},
-      marqueeInfo:{}
+      marqueeInfo:{},
+      selected:1
     };
   },
   filters: {
@@ -183,6 +191,21 @@ export default {
     }
   },
   methods: {
+    handleSelected:async function(s){
+      this.selected = s
+      let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
+      if (data.ret == 0) {
+        let d = JSON.parse(data.data);
+        this.chinaAdd = d.chinaAdd;
+        let provinces = d.areaTree[0].children;
+        this.transformChinaData(provinces);
+        if(s==1){
+           this.getChinaMapData(provinces)
+        }else if(s==2){
+          this.getChinaMapData1(provinces)
+        }
+      }
+    },
     handleShow: function() {
       let isShow = this.nowConfirmShow;
       this.nowConfirmShow = !isShow;
@@ -240,6 +263,19 @@ export default {
         let marqueeInfo = JSON.parse(marqueeResult.data.data)
         this.marqueeInfo = marqueeInfo[0]
       }
+    },
+    getChinaMapData1:function(provinces){
+      let chinaMapData = []
+      for (let i = 0; i < provinces.length; i++) {
+        let item = {}
+        item.name = provinces[i].name;
+        item.confirm = provinces[i].total.confirm
+        chinaMapData.push(item)
+      }
+      this.chinaMapData = {
+          columns: ["name", "confirm"],
+          rows: chinaMapData
+      };
     },
     getChinaMapData:function(provinces){
       let chinaMapData = []
@@ -603,6 +639,36 @@ export default {
         height 3.2vw
         background url('../assets/icon_qs2.png')
         background-size 100% 100%
+.chmap
+  position relative
+  height 93.333vw  
+  .chinamapbtn
+    position absolute
+    left 5.333vw
+    top 0
+    float left
+    z-index 2
+    height 6.933vw
+    span
+      display: block;
+      width: 17.067vw;
+      line-height: normal;
+      text-align: center;
+      font-size: 3.2vw;
+      padding: .8vw 0;
+      border: 1px solid #efefef;
+      float: left;
+      position: relative;
+      margin: 0 -1px;
+      &:first-child
+        border-radius: 1.6vw 0 0 1.6vw;
+      &:last-child
+        border-radius: 0 1.6vw 1.6vw 0;
+    .current
+      background-color #eef4ff
+      border-color #ccdeff
+      color #005dff
+      z-index 2
 .tabGlobal
   .topdatWrap
     .marquee-warp,.marquee
