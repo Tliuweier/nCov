@@ -69,10 +69,10 @@
           <div class="icbar suspect">
             <div class="add" v-if="isShowAdd">
               较上日
-              <span>{{chinaAdd.suspect|numFilter}}</span>
+              <span>{{chinaAdd.importedCase|numFilter}}</span>
             </div>
-            <div class="number">{{chinaTotal.suspect}}</div>
-            <div class="text">现有疑似</div>
+            <div class="number">{{chinaTotal.importedCase}}</div>
+            <div class="text">境外输入</div>
           </div>
           <div class="icbar nowSevere">
             <div class="add" v-if="isShowAdd">

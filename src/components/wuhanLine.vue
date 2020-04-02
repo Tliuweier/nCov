@@ -41,12 +41,12 @@
                 visualMap:[{
                     type:'piecewise',
                     pieces:[
-                        {gt:10000,label:'10000人及以上',color:'#DE1F05'},
-                        {gt:1000,lte:9999,label:'1000-9999人',color:'#FF2736'},
-                        {gt:500,lte:999,label:'500-999人',color:'#FF6341'},
-                        {gt:100,lte:499,label:'100-499人',color:'#FFA577'},
-                        {gt:10,max:99,label:'10-99人',color:'#FFCEA0'},
-                        {gte:1,max:9,label:'1-9人',color:'#FFE7B2'},
+                        {gte:10000,label:'10000人及以上',color:'#DE1F05'},
+                        {gte:1000,lte:9999,label:'1000-9999人',color:'#FF2736'},
+                        {gte:500,lte:999,label:'500-999人',color:'#FF6341'},
+                        {gte:100,lte:499,label:'100-499人',color:'#FFA577'},
+                        {gte:10,lte:99,label:'10-99人',color:'#FFCEA0'},
+                        {gte:1,lte:9,label:'1-9人',color:'#FFE7B2'},
                         {lte:0,label:'0人',color:'#E2EBF4'}
                     ],
                     padding:1,

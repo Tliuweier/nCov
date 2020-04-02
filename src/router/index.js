@@ -8,6 +8,12 @@ const routes = [
         path:'/',
         name:'home',
         component:Home
+    },
+    {
+        path: '/global',
+        name: 'global',
+        component: 
+          resolve =>  require(['../views/global'], resolve)
     }
 ]
 const router = new VueRouter({
