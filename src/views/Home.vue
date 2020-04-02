@@ -8,6 +8,10 @@
         <span @click="handleHeadTipsShow">数据来源：国家及各地卫健委每日信息发布</span>
       </p>
     </div>
+    <div class="pageTab">
+      <p class="pageCurrent">国内疫情</p>
+      <p class="">海外疫情</p>
+    </div>
     <div class="tabGlobal">
       <div class="topdatWrap">
         <div  class="marquee-warp"  :class="{show:marqueeInfo.isNotice}">
@@ -86,14 +90,14 @@
       </div>
       <div class="enterWraper">
         <div class="qt_enter">
-          <a>
-            <span class="icon_rili">战疫分析</span>
+          <a href="https://news.qq.com/hdh5/fycalendar.htm#/" target="_blank">
+            <span class="icon_rili">今日关注</span>
           </a>
-          <a>
-            <span class="icon_guiji">病患轨迹</span>
+          <a href="https://news.qq.com/zt2020/page/fugong.htm" target="_blank">
+            <span class="icon_guiji">复工进行时</span>
           </a>
-          <a>
-            <span class="icon_zyjl">战疫记录</span>
+          <a href="https://map.wap.qq.com/app/mp/online/h5-epidemic-20200203/OutFaceMask.html?communitymap=txnews" target="_blank">
+            <span class="icon_zyjl">口罩售卖</span>
           </a>
         </div>
       </div>
@@ -110,7 +114,7 @@
         <span :class="[selected==2?'current':'']" @click="handleSelected(2)">累计确诊</span>
       </div>
     </div>
-    
+
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-city-contrast :cityStatis="cityStatis" />
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
@@ -127,6 +131,7 @@
     <e-tips />
     <e-dialog :show="nowConfirmShow" @returnClose="returnClose" />
     <e-head-tips :show="headTipShow" @returnClose="returnHeadTipsClose" />
+    <div style="text-align: center;font-size: 1.8vw;"><a target="_blank" href="http://beian.miit.gov.cn">粤ICP备20012129号</a></div>
   </div>
 </template>
 
@@ -193,18 +198,17 @@ export default {
   methods: {
     handleSelected:async function(s){
       this.selected = s
-      let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
-      if (data.ret == 0) {
-        let d = JSON.parse(data.data);
-        this.chinaAdd = d.chinaAdd;
-        let provinces = d.areaTree[0].children;
-        this.transformChinaData(provinces);
-        if(s==1){
-           this.getChinaMapData(provinces)
-        }else if(s==2){
-          this.getChinaMapData1(provinces)
-        }
+      let data =this.$store.getters.getChinaData;
+
+      this.chinaAdd = data.chinaAdd;
+      let provinces = data.areaTree[0].children;
+      this.transformChinaData(provinces);
+      if(s==1){
+        this.getChinaMapData(provinces)
+      }else if(s==2){
+        this.getChinaMapData1(provinces)
       }
+      
     },
     handleShow: function() {
       let isShow = this.nowConfirmShow;
@@ -227,7 +231,7 @@ export default {
 
     async getOnsInfo() {
       let { data } = await request.axiosGet("/g2/getOnsInfo?name=disease_h5");
-
+      this.$store.dispatch('setChinaData',{ data:data})
       let result = await request.axiosGet("/g2/getOnsInfo?name=disease_other");
       // window.console.log(JSON.parse(result.data.data));
       let marqueeResult = await request.axiosGet("/g2/getOnsInfo?name=wuwei_ww_ww_today_notice")
@@ -572,7 +576,7 @@ export default {
   }
 };
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 .head
   height 40vw
   position relative
@@ -639,9 +643,59 @@ export default {
         height 3.2vw
         background url('../assets/icon_qs2.png')
         background-size 100% 100%
+.pageTab{
+  height 11.2vw;
+  background #ddecff;
+  border-radius 3.2vw 3.2vw 0 0;
+  position relative;
+  display flex;
+  justify-content space-between;
+  p{
+    width: 50%;
+    height: 100%;
+    line-height: 11.2vw;
+    font-size: 4.267vw;
+    color: #445063;
+    text-align: center;
+    position: relative;
+    &::before{
+      content: ".";
+      font-size: 0;
+      line-height: 0;
+      display: block;
+      position: absolute;
+      height: 11.2vw;
+      width: 0;
+      top: 0;
+      background-size: 100% 100%;
+    }
+    &:last-child{
+      border-radius: 0 3.2vw 0 0;
+      &::before{
+        left  -5.333vw;
+        background-image url('../assets/tab_current_r.png');
+      }
+    }
+    &:first-child{
+      border-radius: 3.2vw 0 0 0;
+      &::before{
+        right -5.333vw;
+        background-image url('../assets/tab_current_l.png');
+      }
+    }
+  }
+  .pageCurrent{
+    color: #005dff;
+    background-color: #fff;
+    font-weight: 400;
+    &::before{
+      width 10.667vw;
+    }
+  }
+}
 .chmap
   position relative
-  height 93.333vw  
+  height 93.333vw
   .chinamapbtn
     position absolute
     left 5.333vw
@@ -885,10 +939,10 @@ export default {
             background-image url('../assets/icon_rili.png')
         .icon_guiji
           &::before
-            background-image url('../assets/icon_guiji.png')
+            background-image url('../assets/icon_fgjxs.png')
         .icon_zyjl
           &::before
-            background-image url('../assets/icon_zyjl2.png')
+            background-image url('../assets/icon_kj.png')
     .qt_enter, .qt_enter>a
       height 11.2vw
       border-radius 1.6vw

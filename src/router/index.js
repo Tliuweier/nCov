@@ -14,6 +14,12 @@ const routes = [
         name: 'global',
         component: 
           resolve =>  require(['../views/global'], resolve)
+    },
+    {
+        path: '/area',
+        name: 'area',
+        component: 
+          resolve =>  require(['../views/area'], resolve)
     }
 ]
 const router = new VueRouter({

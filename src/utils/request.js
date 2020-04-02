@@ -1,4 +1,4 @@
-const axios = require('axios')
+import  axios from 'axios'
 export default {
     axiosGet:function(url,param){
         return new Promise((resolve,reject)=>{
