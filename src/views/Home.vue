@@ -10,7 +10,7 @@
     </div>
     <div class="pageTab">
       <p class="pageCurrent">国内疫情</p>
-      <p class="">海外疫情</p>
+      <p class="" @click="handleProvince">海外疫情</p>
     </div>
     <div class="tabGlobal">
       <div class="topdatWrap">
@@ -115,7 +115,7 @@
       </div>
     </div>
 
-    <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
+    <!-- <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" /> -->
     <e-city-contrast :cityStatis="cityStatis" />
     <e-china-line :chinaLine1Data="chinaLine1Data" :chinaLine2Data="chinaLine2Data" :chinaLine3Data="chinaLine3Data" :chinaLine4Data="chinaLine4Data" />
     <e-hubei-line :hubeiLineData="hubeiLineData" :hubeiLine2Data="hubeiLine2Data" :hubeiLine3Data="hubeiLine3Data" :hubeiLine4Data="hubeiLine4Data"/>
@@ -196,6 +196,9 @@ export default {
     }
   },
   methods: {
+    handleProvince:function(){
+      this.$router.push({name:'area'})
+    },
     handleSelected:async function(s){
       this.selected = s
       let data =this.$store.getters.getChinaData;
