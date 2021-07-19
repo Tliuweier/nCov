@@ -20,6 +20,24 @@ const routes = [
         name: 'area',
         component: 
           resolve =>  require(['../views/area'], resolve)
+    },
+    {
+        path: '/parent',
+        name: 'parent',
+        component: 
+          resolve =>  require(['../views/parent'], resolve)
+    },
+    {
+        path: '/blog',
+        name: 'blog',
+        component: 
+          resolve =>  require(['../views/blog'], resolve)
+    },
+    {
+        path: '/movieSeat',
+        name: 'movieSeat',
+        component: 
+          resolve =>  require(['../views/movieSeat'], resolve)
     }
 ]
 const router = new VueRouter({

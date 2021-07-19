@@ -8,6 +8,7 @@ import 'swiper/dist/css/swiper.css'
 import * as fundebug from "fundebug-javascript";
 import fundebugVue from "fundebug-vue";
 import axios from './utils/request'
+import ELoading from './components/loading/ELoading.vue'
 fundebug.init({
     apikey: "cf9092797fe138e06f8b92417639e1963cc51d3cd4b3a01aef0dfdcf4e6c9e66",
     httpTimeout:5000,
@@ -17,7 +18,7 @@ fundebugVue(fundebug, Vue);
 Vue.prototype.$axios = axios
 Vue.use(VueAwesomeSwiper)
 Vue.config.productionTip = false
-
+Vue.component("Loading",ELoading)
 new Vue({
   router,
   store,

@@ -23,7 +23,8 @@ const cdn = {
     ],
     // cdn的js链接
     js: [
-        'https://cdn.staticfile.org/vue/2.6.10/vue.min.js',
+        'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
+        // 'https://cdn.staticfile.org/vue/2.6.10/vue.min.js',
         'https://cdn.staticfile.org/vuex/3.0.1/vuex.min.js',
         'https://cdn.staticfile.org/vue-router/3.0.3/vue-router.min.js',
         'https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js',
@@ -34,6 +35,7 @@ const cdn = {
 
 module.exports = {
     devServer:{
+        disableHostCheck: true,
         proxy: {
             '/g2': {    // search为转发路径
                 target: 'https://view.inews.qq.com/',  // 目标地址
@@ -47,6 +49,11 @@ module.exports = {
             },
             '/news':{
                 target: 'https://api.dreamreader.qq.com/',  // 目标地址
+                ws: true, // 是否代理websockets
+                changeOrigin: true // 设置同源  默认false，是否需要改变原始主机头为目标URL,
+            },
+            '/json':{
+                target: 'http://111.229.136.31/',  // 目标地址
                 ws: true, // 是否代理websockets
                 changeOrigin: true // 设置同源  默认false，是否需要改变原始主机头为目标URL,
             }

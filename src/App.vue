@@ -22,12 +22,13 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */
   color: #2c3e50;
-  width: 100vw;
+  // max-width: 500px;
+  // max-width 500px;
   position: relative;
   min-height: 100vh;
   margin: 0 auto;
   .wrap {
-    width:100vw;
+    width:100%;
     overflow:hidden;
 
   }
